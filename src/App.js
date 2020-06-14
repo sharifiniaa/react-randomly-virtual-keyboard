@@ -1,10 +1,10 @@
-import React from 'react';
-import logo from './logo.svg';
+import React from "react";
+import Login from "./container/Login";
 
 function App() {
   return (
     <div className="App">
-      
+      <Login />
     </div>
   );
 }
