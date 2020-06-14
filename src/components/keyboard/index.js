@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import Keyboard from "react-simple-keyboard";
-import * as methods from "./generator";
+import * as methods from "../../utils/keyboard/generator";
 
 const VirtualKeyboard = ({ handleChangeKeyboard }) => {
   const [layoutName, setLayoutName] = useState("default");
@@ -23,7 +23,7 @@ const VirtualKeyboard = ({ handleChangeKeyboard }) => {
 
   useEffect(() => {
     RandomizeKeyboard();
-  }, [layoutName]);
+  }, []);
 
   const RandomizeKeyboard = () => {
     setDefaultKeyboard(methods.cleanWhiteSpace(defaultKeyboard));

@@ -1,12 +1,63 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Form, Input, Button } from "antd";
+import VirtualKeyboard from "../../components/keyboard";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
 const LoginForm = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    captcha: "",
+  });
+  const [focusInput, setFocusInput] = useState("username");
+  const keyboard = useRef();
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
     console.log(values);
+  };
+
+  const formValueChange = (event) => {
+    const input = event.target;
+    const inputName = input.name;
+    const inputValue = input.value;
+
+    setFormData((prevState) => ({
+      ...prevState,
+      [inputName]: inputValue,
+    }));
+  };
+
+  useEffect(() => {
+    const { username, password, captcha } = formData;
+    form.setFieldsValue({
+      username,
+      password,
+      captcha,
+    });
+  }, [formData, form]);
+
+  const handleChangeKeyboard = (value) => {
+    if (value === "{backspace}") {
+      let newValue = formData[focusInput].substring(
+        0,
+        formData[focusInput].length - 1
+      );
+      setFormData((prevState) => ({
+        ...prevState,
+        [focusInput]: newValue,
+      }));
+      return;
+    }
+    setFormData((prevState) => ({
+      ...prevState,
+      [focusInput]: prevState[focusInput] + value,
+    }));
+  };
+
+  const handleInputName = (event) => {
+    const inputName = event.target.name;
+    setFocusInput(inputName);
   };
 
   return (
@@ -26,6 +77,9 @@ const LoginForm = () => {
             prefix={<UserOutlined className="site-form-item-icon" />}
             placeholder="Username"
             name="username"
+            onFocus={handleInputName}
+            value={formData.username}
+            onChange={formValueChange}
           />
         </Form.Item>
         <Form.Item
@@ -35,9 +89,14 @@ const LoginForm = () => {
               message: "Please enter your Password!",
             },
           ]}
+          type="password"
+          onChange={formValueChange}
+          value={formData.password}
+          onFocus={handleInputName}
+          placeholder="Password"
           name="password"
         >
-          <Input
+          <Input.Password
             prefix={<LockOutlined className="site-form-item-icon" />}
             type="password"
             placeholder="Password"
@@ -53,7 +112,14 @@ const LoginForm = () => {
           ]}
           name="captcha"
         >
-          <Input prefix="" name="captcha" placeholder="captcha" />
+          <Input
+            prefix=""
+            onChange={formValueChange}
+            value={formData.captcha}
+            onFocus={handleInputName}
+            name="captcha"
+            placeholder="captcha"
+          />
         </Form.Item>
         <Form.Item>
           <a href="/">Forgot password</a>
@@ -72,6 +138,9 @@ const LoginForm = () => {
             Don't have account? <a href="/">Sign up!</a>
           </div>
         </Form.Item>
+        <div ref={keyboard}>
+          <VirtualKeyboard handleChangeKeyboard={handleChangeKeyboard} />
+        </div>
       </Form>
     </React.Fragment>
   );
